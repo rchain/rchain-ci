@@ -22,7 +22,7 @@ jobs:
 
       - name: Run bench
         run: |
-          sbt rspaceBench/jmh:run -rrf /report.json
+          sbt "rspaceBench/jmh:run -rff /report.json"
 
       - name: Upload report
         uses: actions/upload-artifact@v2
