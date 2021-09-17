@@ -1,4 +1,4 @@
-name: help-command
+name: rchain-ci
 on:
   push:
     branches: [ master ]
@@ -7,6 +7,7 @@ on:
 jobs:
   help:
     runs-on: ubuntu-latest
+    container: rchain/buildenv
     steps:
       - name: Pull from repo
         uses: actions/checkout@v2
@@ -16,4 +17,3 @@ jobs:
         run: |
           export SBT_OPTS="$SBT_OPTS -Dsbt.task.timings=true -Xmx2500m -Xss2m"
           sbt update compile
-
