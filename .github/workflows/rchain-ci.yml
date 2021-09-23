@@ -14,7 +14,8 @@ jobs:
       - name: Pull from repo
         uses: actions/checkout@v2
         with:
-          repository: rchain/rchain
+          repository: zsluedem/rchain
+          ref: bench-test
       - name: Compile
         run: |
           export SBT_OPTS="$SBT_OPTS -Dsbt.task.timings=true -Xmx2500m -Xss2m"
