@@ -16,6 +16,10 @@ jobs:
         with:
           repository: zsluedem/rchain
           ref: bench-test
+
+      - name: Set rchain repo commit hash
+        run: echo "RCHAIN_SHA=$(git rev-parse HEAD)" >> $GITHUB_ENV
+
       - name: Compile
         run: |
           export SBT_OPTS="$SBT_OPTS -Dsbt.task.timings=true -Xmx2500m -Xss2m"
@@ -23,7 +27,23 @@ jobs:
 
       - name: Run bench
         run: |
-          sbt "bench/jmh:run -rff $GITHUB_WORKSPACE/report.json -rf json"
+          sbt "bench/jmh:run -rff /$RCHAIN_SHA-report.json -rf json"
+
+      - name: Pull ci repo
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.RBOT_TOKEN }}
+
+      - name: Move file
+        run: |
+          mv /$RCHAIN_SHA-report.json ./report/
+      
+      - name: Commit report
+        uses: EndBug/add-and-commit@v7
+        with: 
+          add: ./report/$RCHAIN_SHA-report.json
+          message: '$RCHAIN_SHA bench report'
+          push: true
 
       - name: Upload report
         uses: exuanbo/actions-deploy-gist@v1
