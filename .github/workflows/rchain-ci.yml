@@ -16,23 +16,23 @@ jobs:
         with:
           repository: zsluedem/rchain
           ref: bench-test
-          path: $GITHUB_WORKSPACE/rchain
+          path: ./rchain
 
       - name: Set rchain repo commit hash
-        working-directory: $GITHUB_WORKSPACE/rchain
+        working-directory: ./rchain
         run: echo "RCHAIN_SHA=$(git rev-parse HEAD)" >> $GITHUB_ENV
 
       - name: Test env
         run: echo $RCHAIN_SHA
 
       - name: Compile
-        working-directory: $GITHUB_WORKSPACE/rchain
+        working-directory: ./rchain
         run: |
           export SBT_OPTS="$SBT_OPTS -Dsbt.task.timings=true -Xmx2500m -Xss2m"
           sbt update compile
 
       - name: Run bench
-        working-directory: $GITHUB_WORKSPACE/rchain
+        working-directory: ./rchain
         run: |
           sbt "bench/jmh:run -rff /$RCHAIN_SHA-report.json -rf json"
 
@@ -40,10 +40,10 @@ jobs:
         uses: actions/checkout@v2
         with:
           token: ${{ secrets.RBOT_TOKEN }}
-          path: $GITHUB_WORKSPACE/rchain-ci
+          path: ./rchain-ci
 
       - name: Move file
-        working-directory: $GITHUB_WORKSPACE/rchain-ci
+        working-directory: .//rchain-ci
         run: |
           mv /$RCHAIN_SHA-report.json ./report/
       
@@ -53,7 +53,7 @@ jobs:
           add: ./report/$RCHAIN_SHA-report.json
           message: '$RCHAIN_SHA bench report'
           push: true
-          cwd: $GITHUB_WORKSPACE/rchain-ci
+          cwd: .//rchain-ci
 
       - name: Upload report
         uses: exuanbo/actions-deploy-gist@v1
