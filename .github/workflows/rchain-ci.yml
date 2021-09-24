@@ -43,7 +43,7 @@ jobs:
           path: ./rchain-ci
 
       - name: Move file
-        working-directory: .//rchain-ci
+        working-directory: ./rchain-ci
         run: |
           mv /$RCHAIN_SHA-report.json ./report/
       
@@ -53,7 +53,7 @@ jobs:
           add: ./report/$RCHAIN_SHA-report.json
           message: '$RCHAIN_SHA bench report'
           push: true
-          cwd: .//rchain-ci
+          cwd: ./rchain-ci
 
       - name: Upload report
         uses: exuanbo/actions-deploy-gist@v1
