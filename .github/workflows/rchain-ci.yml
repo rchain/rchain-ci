@@ -14,8 +14,8 @@ jobs:
       - name: Pull from repo
         uses: actions/checkout@v2
         with:
-          repository: zsluedem/rchain
-          ref: bench-test
+          repository: rchain/rchain
+          ref: dev
           path: ./rchain
 
       - name: Set rchain repo commit hash
@@ -34,7 +34,7 @@ jobs:
       - name: Run bench
         working-directory: ./rchain
         run: |
-          sbt "bench/jmh:run -rff /$RCHAIN_SHA-report.json -rf json"
+          sbt "rspaceBench/jmh:run -rff /$RCHAIN_SHA-report.json -rf json"
 
       - name: Pull ci repo
         uses: actions/checkout@v2
@@ -46,20 +46,14 @@ jobs:
         working-directory: ./rchain-ci
         run: |
           mv /$RCHAIN_SHA-report.json ./report/
-      
+
       - name: Commit report
         uses: EndBug/add-and-commit@v7
-        working-directory: ./rchain-ci
         with: 
-          add: ./report/$RCHAIN_SHA-report.json
-          message: '$RCHAIN_SHA bench report'
+          add: ${{format('report/{0}-report.json', env.RCHAIN_SHA)}}
+          message: ${{format('{0} bench report', env.RCHAIN_SHA)}}
+          committer_email: rbot-ci@rchain.coop
+          author_name: rbot-ci
+          committer_name: rbot-ci
           push: true
           cwd: ./rchain-ci
-
-      - name: Upload report
-        uses: exuanbo/actions-deploy-gist@v1
-        with:
-          token: ${{ secrets.RBOT_TOKEN }}
-          gist_id: $GITHUB_SHA
-          gist_file_name: report.json
-          file_path: report.json
